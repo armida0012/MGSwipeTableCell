@@ -734,7 +734,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
 {
     //Fix right to left layout direction for arabic and hebrew languagues
     if (self.bounds.size.width != self.contentView.bounds.size.width && [self isRTLLocale]) {
-        _swipeOverlay.frame = CGRectMake(-self.bounds.size.width + self.contentView.bounds.size.width, 0, _swipeOverlay.bounds.size.width, _swipeOverlay.bounds.size.height);
+        _swipeOverlay.frame = CGRectMake(-self.bounds.size.width + self.contentView.bounds.size.width - self.buttonOffset, 0, _swipeOverlay.bounds.size.width - self.buttonOffset, _swipeOverlay.bounds.size.height);
     }
 }
 
@@ -771,7 +771,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
     }
     if (_swipeOverlay) {
         CGSize prevSize = _swipeView.bounds.size;
-        _swipeOverlay.frame = CGRectMake(0, 0, self.bounds.size.width, self.contentView.bounds.size.height);
+        _swipeOverlay.frame = CGRectMake(self.buttonOffset, 0, self.bounds.size.width - self.buttonOffset, self.contentView.bounds.size.height);
         [self fixRegionAndAccesoryViews];
         if (_swipeView.image &&  !CGSizeEqualToSize(prevSize, _swipeOverlay.bounds.size)) {
             //refresh safeInsets in situations like layout change, orientation change, table resize, etc.
@@ -842,7 +842,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
         _rightSwipeSettings.allowsButtonsWithDifferentWidth = _rightSwipeSettings.allowsButtonsWithDifferentWidth || _allowsButtonsWithDifferentWidth;
         _rightView = [[MGSwipeButtonsView alloc] initWithButtons:_rightButtons direction:MGSwipeDirectionRightToLeft swipeSettings:_rightSwipeSettings safeInset:safeInsets.right];
         _rightView.cell = self;
-        _rightView.layer.zPosition = 1
+        _rightView.layer.zPosition = 1;
         _rightView.frame = CGRectMake(_swipeOverlay.bounds.size.width + safeInsets.right * ([self isRTLLocale] ? 1 : -1),
                                       _rightSwipeSettings.topMargin,
                                       _rightView.bounds.size.width,
