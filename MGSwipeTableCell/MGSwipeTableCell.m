@@ -612,6 +612,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
     UIView * _swipeOverlay;
     UIImageView * _swipeView;
     UIView * _swipeContentView;
+    UIImageView * _cellSnapshotView;
     MGSwipeButtonsView * _leftView;
     MGSwipeButtonsView * _rightView;
     bool _allowSwipeRightToLeft;
@@ -762,6 +763,27 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
     }
     return _swipeContentView;
 }
+    
+-(UIView *) swipeOverlay
+{
+    return _swipeOverlay;
+}
+    
+-(UIImageView *) cellSnapshotView
+{
+    if (!_cellSnapshotView) {
+        _cellSnapshotView = [[UIImageView alloc] initWithFrame:self.contentView.bounds];
+        _cellSnapshotView.backgroundColor = [UIColor clearColor];
+        _cellSnapshotView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _cellSnapshotView.layer.zPosition = 10;
+    }
+    return _cellSnapshotView;
+}
+    
+-(UIImageView *) swipeView
+{
+    return _swipeView;
+}
 
 -(void) layoutSubviews
 {
@@ -813,7 +835,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
 {
     UIEdgeInsets safeInsets = [self getSafeInsets];
     if (!_swipeOverlay) {
-        _swipeOverlay = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.contentView.bounds.size.height)];
+        _swipeOverlay = [[UIView alloc] initWithFrame:CGRectMake(self.swipeOverlayInsets.left, self.swipeOverlayInsets.top, self.bounds.size.width-self.swipeOverlayInsets.left-self.swipeOverlayInsets.right, self.contentView.bounds.size.height-self.swipeOverlayInsets.top-self.swipeOverlayInsets.bottom)];
         [self fixRegionAndAccesoryViews];
         _swipeOverlay.hidden = YES;
         _swipeOverlay.backgroundColor = [self backgroundColorForSwipe];
@@ -821,7 +843,8 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
         _swipeView = [[UIImageView alloc] initWithFrame:_swipeOverlay.bounds];
         _swipeView.autoresizingMask =  UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         _swipeView.contentMode = UIViewContentModeCenter;
-        _swipeView.clipsToBounds = YES;
+        _swipeView.clipsToBounds = FALSE;
+        _swipeOverlay.clipsToBounds = FALSE;
         [_swipeOverlay addSubview:_swipeView];
         [self.contentView addSubview:_swipeOverlay];
     }
@@ -877,13 +900,17 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
         [_delegate swipeTableCellWillBeginSwiping:self];
     }
     
-    // snapshot cell without separator
-    CGSize  cropSize        = CGSizeMake(self.bounds.size.width, self.contentView.bounds.size.height);
-    _swipeView.image = [self imageFromView:self cropSize:cropSize];
-    
     _swipeOverlay.hidden = NO;
     if (_swipeContentView)
         [_swipeView addSubview:_swipeContentView];
+    
+    UIView *snapContent = self.cellContentSnapshotView ? self.cellContentSnapshotView : self.contentView;
+    // snapshot cell without separator
+    CGSize  cropSize        = CGSizeMake(snapContent.bounds.size.width, snapContent.bounds.size.height);
+    
+    self.cellSnapshotView.image = [self imageFromView: snapContent cropSize:cropSize];
+    self.cellSnapshotView.frame = CGRectMake(0, 0, snapContent.frame.size.width, snapContent.frame.size.height);
+    [_swipeView addSubview: self.cellSnapshotView];
     
     if (!_allowsMultipleSwipe) {
         //input overlay on the whole table

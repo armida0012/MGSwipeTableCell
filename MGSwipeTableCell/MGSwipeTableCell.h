@@ -222,6 +222,10 @@ typedef NS_ENUM(NSInteger, MGSwipeEasingFunction) {
 
 /** optional to use contentView alternative. Use this property instead of contentView to support animated views while swiping */
 @property (nonatomic, strong, readonly, nonnull) UIView * swipeContentView;
+@property (nonatomic, strong, readonly, nonnull) UIView * swipeOverlay;
+@property (nonatomic) UIEdgeInsets swipeOverlayInsets;
+@property (nonatomic, strong) UIView * _Nullable cellContentSnapshotView;
+@property (nonatomic, strong, readonly, nonnull) UIImageView * cellSnapshotView;
 
 /** 
  * Left and right swipe buttons and its settings.
