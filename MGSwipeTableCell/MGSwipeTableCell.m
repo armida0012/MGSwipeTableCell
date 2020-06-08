@@ -909,7 +909,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
     CGSize  cropSize        = CGSizeMake(snapContent.bounds.size.width, snapContent.bounds.size.height);
     
     self.cellSnapshotView.image = [self imageFromView: snapContent cropSize:cropSize];
-    self.cellSnapshotView.frame = CGRectMake(0, 0, snapContent.frame.size.width, snapContent.frame.size.height);
+    self.cellSnapshotView.frame = CGRectMake(0, self.swipeOverlayInsets.top, snapContent.frame.size.width, snapContent.frame.size.height - self.swipeOverlayInsets.top - self.swipeOverlayInsets.bottom);
     [_swipeView addSubview: self.cellSnapshotView];
     
     if (!_allowsMultipleSwipe) {
